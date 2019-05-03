@@ -80,7 +80,8 @@ export default class Mesh extends React.Component {
     let pointCount = Math.round(this.props.density * (Math.sqrt(this.canvasSize.x * this.canvasSize.y) / 1000))
     // Create the points
     for (let i = 0; i < pointCount; i++) {
-      this.points.push(new Point(this.canvasSize, this.props.pointRadius, this.props.pointSpeed))
+      let pointSpeed = this.props.minSpeed + (Math.random() * (this.props.maxSpeed - this.props.minSpeed))
+      this.points.push(new Point(this.canvasSize, this.props.pointRadius, pointSpeed))
     }
   }
 
@@ -136,8 +137,10 @@ Mesh.protoTypes = {
   density: PropTypes.number,
   // The size of the points
   pointRadius: PropTypes.number,
-  // The speed of the points
-  pointSpeed: PropTypes.number,
+  // The minimum speed of the points
+  minSpeed: PropTypes.number,
+  // The maximum speed of the points
+  maxSpeed: PropTypes.number,
   // The colour of the points
   pointColor: PropTypes.string,
   // The maximum distance between two points to draw a line
@@ -150,8 +153,9 @@ Mesh.protoTypes = {
 
 Mesh.defaultProps = {
   density: 50,
+  minSpeed: 0.2,
+  maxSpeed: 1.5,
   pointRadius: 3,
-  pointSpeed: .5,
   pointColor: '225,228,235',
   lineRadius: 250,
   lineWidth: 1,
