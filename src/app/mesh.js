@@ -9,7 +9,7 @@ export default class Mesh extends React.Component {
       show: false
     }
     this.options = {
-      pointCount: 50,
+      density: 50,
       pointRadius: 3,
       pointSpeed: .5,
       pointColor: '225,228,235',
@@ -83,8 +83,11 @@ export default class Mesh extends React.Component {
   createPoints = () => {
     // Prepare an array for the points
     this.points = []
+    // Calculate the points count from the density
+    // Density is number of points per 1000px squared
+    let pointCount = Math.round(this.options.density * (Math.sqrt(this.canvasSize.x * this.canvasSize.y) / 1000))
     // Create the points
-    for (let i = 0; i < this.options.pointCount; i++) {
+    for (let i = 0; i < pointCount; i++) {
       this.points.push(new Point(this.canvasSize, this.options.pointRadius, this.options.pointSpeed))
     }
   }
@@ -93,9 +96,9 @@ export default class Mesh extends React.Component {
     // Prepare an array for the lines
     this.lines = []
     // Loop through the points
-    for (let pointA = 0; pointA < this.options.pointCount; pointA++) {
+    for (let pointA = 0; pointA < this.points.length; pointA++) {
       // Compare unique pairs
-      for (let pointB = pointA + 1; pointB < this.options.pointCount; pointB++) {
+      for (let pointB = pointA + 1; pointB < this.points.length; pointB++) {
         this.compareDistances(this.points[pointA].position, this.points[pointB].position)
       }
       // Check the distance from the mouse
