@@ -1,9 +1,13 @@
 import React from 'react'
+import ClassName from 'classnames'
 import Point from './point'
 
 export default class Mesh extends React.Component {
   constructor (props) {
     super(props)
+    this.state = {
+      show: false
+    }
     this.options = {
       pointCount: 50,
       pointRadius: 3,
@@ -25,12 +29,7 @@ export default class Mesh extends React.Component {
     // Call the loop function before rendering the next frame
     window.requestAnimationFrame(this.loop)
     // Update canvas size on resize
-    window.addEventListener('resize', () => {
-      // Avoid jumpy resizes by only updating the canvas size
-      // when the window isn't actively being resized
-      clearTimeout(this.resizeTimer)
-      this.resizeTimer = setTimeout(this.initialiseMesh, 100)
-    })
+    window.addEventListener('resize', this.resize)
     // Setup Mouse Events
     this.canvasContainer.addEventListener('mouseenter', () => {
       this.mouseActive = true
@@ -55,6 +54,17 @@ export default class Mesh extends React.Component {
     }
     // Create the points
     this.createPoints()
+    // Show the canvas
+    this.setState({show: true})
+  }
+
+  resize = () => {
+    // Clear resize timer
+    clearTimeout(this.resizeTimer)
+    // Hide the canvas
+    this.setState({show: false})
+    // Wait for fade animation to be finished
+    this.resizeTimer = setTimeout(this.initialiseMesh, 400)
   }
   
   loop = () => {
@@ -120,7 +130,7 @@ export default class Mesh extends React.Component {
   render () {
     return (
       <div className='mesh-canvas-container' ref={element => (this.canvasContainer = element)}>
-        <canvas ref={element => (this.canvasElement = element)} />
+        <canvas className={ClassName('mesh-canvas', { 'show': this.state.show })} ref={element => (this.canvasElement = element)} />
       </div>
     )
   }
