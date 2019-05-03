@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import ClassName from 'classnames'
 import Point from './point'
 
@@ -7,15 +8,6 @@ export default class Mesh extends React.Component {
     super(props)
     this.state = {
       show: false
-    }
-    this.options = {
-      density: 50,
-      pointRadius: 3,
-      pointSpeed: .5,
-      pointColor: '225,228,235',
-      lineRadius: 250,
-      lineWidth: 1,
-      lineColor: '225,228,235'
     }
     this.mouseActive = false
     this.mousePosition = { x: 0, y: 0 }
@@ -73,7 +65,7 @@ export default class Mesh extends React.Component {
     // Update and draw the points
     for (let point of this.points) {
       point.update()
-      point.draw(this.canvas, this.options.pointColor)
+      point.draw(this.canvas, this.props.pointColor)
     }
     this.createLines()
     // Call the loop function before rendering the next frame
@@ -85,10 +77,10 @@ export default class Mesh extends React.Component {
     this.points = []
     // Calculate the points count from the density
     // Density is number of points per 1000px squared
-    let pointCount = Math.round(this.options.density * (Math.sqrt(this.canvasSize.x * this.canvasSize.y) / 1000))
+    let pointCount = Math.round(this.props.density * (Math.sqrt(this.canvasSize.x * this.canvasSize.y) / 1000))
     // Create the points
     for (let i = 0; i < pointCount; i++) {
-      this.points.push(new Point(this.canvasSize, this.options.pointRadius, this.options.pointSpeed))
+      this.points.push(new Point(this.canvasSize, this.props.pointRadius, this.props.pointSpeed))
     }
   }
 
@@ -114,15 +106,15 @@ export default class Mesh extends React.Component {
       Math.pow(pointAPosition.x - pointBPosition.x, 2) + 
       Math.pow(pointAPosition.y - pointBPosition.y, 2)
     )
-    if (distance < this.options.lineRadius) {
-      let opacity = 1 - (distance / this.options.lineRadius)
+    if (distance < this.props.lineRadius) {
+      let opacity = 1 - (distance / this.props.lineRadius)
       this.drawLine(pointAPosition, pointBPosition, opacity)
     }
   }
 
   drawLine = (startPoint, endPoint, opacity) => {
-    this.canvas.lineWidth = this.options.lineWidth
-    this.canvas.strokeStyle = `rgba(${this.options.lineColor}, ${opacity})`
+    this.canvas.lineWidth = this.props.lineWidth
+    this.canvas.strokeStyle = `rgba(${this.props.lineColor}, ${opacity})`
     this.canvas.beginPath()
     this.canvas.moveTo(startPoint.x, startPoint.y)
     this.canvas.lineTo(endPoint.x, endPoint.y)
@@ -137,4 +129,31 @@ export default class Mesh extends React.Component {
       </div>
     )
   }
+}
+
+Mesh.protoTypes = {
+  // The number of points per 1000px squared
+  density: PropTypes.number,
+  // The size of the points
+  pointRadius: PropTypes.number,
+  // The speed of the points
+  pointSpeed: PropTypes.number,
+  // The colour of the points
+  pointColor: PropTypes.string,
+  // The maximum distance between two points to draw a line
+  lineRadius: PropTypes.number,
+  // The stroke width of the lines
+  lineWidth: PropTypes.number,
+  // The colour of thelines
+  lineColor: PropTypes.string
+}
+
+Mesh.defaultProps = {
+  density: 50,
+  pointRadius: 3,
+  pointSpeed: .5,
+  pointColor: '225,228,235',
+  lineRadius: 250,
+  lineWidth: 1,
+  lineColor: '225,228,235'
 }
